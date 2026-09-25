@@ -1,0 +1,64 @@
+/* Aceto — pagine pubbliche. Stessi colori dell'app (design/tokens del prototipo). */
+:root {
+  --bg: #f4efe6;
+  --card: #fff;
+  --ink: #2a3326;
+  --ink-soft: #586152;
+  --muted: #8a9081;
+  --line: #ece5d7;
+  --primary: #d5b86c;
+  --act-deep: #364d51;
+  --red: #b04631;
+  --green: #4f7d5a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: radial-gradient(1200px 600px at 50% -10%, #efe7d7 0%, transparent 60%), var(--bg);
+  color: var(--ink);
+  font: 15px/1.55 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+main { width: 100%; max-width: 460px; }
+.scheda {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 28px 24px;
+  box-shadow: 0 18px 50px rgba(42, 51, 38, 0.1);
+}
+.marchio { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.marchio .bollo {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--primary); display: grid; place-items: center;
+}
+.marchio .bollo svg { width: 22px; height: 22px; stroke: var(--act-deep); fill: none; stroke-width: 1.6; }
+.marchio b { font-size: 19px; letter-spacing: -0.01em; }
+.marchio small { display: block; color: var(--muted); font-size: 12px; }
+h1 { font-size: 21px; margin: 0 0 8px; letter-spacing: -0.01em; }
+p { color: var(--ink-soft); margin: 0 0 14px; }
+label { display: block; font-size: 13px; font-weight: 600; margin: 16px 0 6px; }
+input {
+  width: 100%; padding: 12px 13px; font: inherit; color: var(--ink);
+  background: #fff; border: 1px solid var(--line); border-radius: 12px;
+}
+input:focus { outline: none; border-color: var(--primary); }
+button {
+  width: 100%; margin-top: 18px; padding: 13px; cursor: pointer;
+  font: 700 15px/1 'DM Sans', system-ui, sans-serif; color: #fff;
+  background: var(--act-deep); border: none; border-radius: 12px;
+}
+button:disabled { opacity: 0.5; cursor: default; }
+.esito { margin-top: 16px; padding: 12px 14px; border-radius: 12px; font-size: 14px; display: none; }
+.esito.mostra { display: block; }
+.esito.ok { background: #e6f0e7; color: var(--green); }
+.esito.errore { background: #f6e1d9; color: var(--red); }
+ul { color: var(--ink-soft); padding-left: 20px; margin: 0 0 14px; }
+li { margin-bottom: 6px; }
+footer { margin-top: 18px; text-align: center; font-size: 12px; color: var(--muted); }
+footer a { color: var(--ink-soft); }

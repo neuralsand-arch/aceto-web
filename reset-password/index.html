@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aceto · Nuova password</title>
+<link rel="stylesheet" href="../stile.css">
+</head>
+<body>
+<main>
+  <div class="scheda">
+    <div class="marchio">
+  <span class="bollo"><svg viewBox="0 0 24 24"><path d="M5 19c0-7 5-12 14-13 1 9-4 14-11 14H5Z"/><path d="M5 19c3-4 6-6 10-7.5"/></svg></span>
+  <span><b>Aceto</b><small>Mangia bene, senza pensarci</small></span>
+</div>
+    <h1>Scegli una nuova password</h1>
+    <p id="intro">Hai chiesto di reimpostare la password del tuo account Aceto. Scrivine una nuova: da subito userai quella per entrare.</p>
+
+    <form id="modulo">
+      <label for="pw">Nuova password</label>
+      <input id="pw" type="password" autocomplete="new-password" minlength="8" required placeholder="almeno 8 caratteri">
+      <label for="pw2">Ripetila</label>
+      <input id="pw2" type="password" autocomplete="new-password" minlength="8" required>
+      <button id="invia" type="submit">Salva la password</button>
+    </form>
+
+    <div class="esito" id="esito"></div>
+  </div>
+  <footer>In attesa del sito ufficiale · <a href="../">Aceto</a></footer>
+</main>
+
+<script>
+  // Il link della mail arriva con il token nel frammento dell'URL (flusso implicito):
+  // il verificatore PKCE resterebbe nell'app, e questa pagina non ce l'ha.
+  const PROGETTO = 'https://vjgdqzfgwgefxuefufvt.supabase.co';
+  const CHIAVE = 'sb_publishable_wBstGN2v9PAGbPTj7PKHYA_U6HethhX';   // chiave pubblicabile: è fatta per stare in pagine pubbliche
+
+  const esito = document.getElementById('esito');
+  const modulo = document.getElementById('modulo');
+  const bottone = document.getElementById('invia');
+
+  function mostra(testo, ok) {
+    esito.textContent = testo;
+    esito.className = 'esito mostra ' + (ok ? 'ok' : 'errore');
+  }
+
+  const frammento = new URLSearchParams(location.hash.slice(1));
+  const token = frammento.get('access_token');
+  const errore = frammento.get('error_description');
+
+  if (errore) {
+    modulo.style.display = 'none';
+    mostra(decodeURIComponent(errore.replace(/\+/g, ' ')) + ' — richiedi un nuovo link dall\'app.', false);
+  } else if (!token) {
+    modulo.style.display = 'none';
+    mostra('Questo indirizzo va aperto dal link che trovi nella mail: da solo non può cambiare nulla.', false);
+  }
+
+  modulo.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pw = document.getElementById('pw').value;
+    if (pw !== document.getElementById('pw2').value) return mostra('Le due password non coincidono.', false);
+
+    bottone.disabled = true;
+    bottone.textContent = 'Salvo…';
+    try {
+      const r = await fetch(PROGETTO + '/auth/v1/user', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', apikey: CHIAVE, Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ password: pw }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.msg || d.message || d.error_description || 'Non è stato possibile salvare la password.');
+      modulo.style.display = 'none';
+      mostra('Fatto: la password è stata cambiata. Torna nell\'app e accedi con quella nuova.', true);
+    } catch (err) {
+      mostra(err.message + ' Se il link è vecchio, richiedine uno nuovo dall\'app.', false);
+      bottone.disabled = false;
+      bottone.textContent = 'Salva la password';
+    }
+  });
+</script>
+</body>
+</html>
