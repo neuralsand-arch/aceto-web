@@ -7,6 +7,7 @@ Pagine pubbliche di **Aceto**, servite da GitHub Pages **in attesa del sito uffi
 |---|---|
 | `reset-password/` | dove atterra il link di reimpostazione della password inviato per mail |
 | `account-deletion/` | l'URL pubblico di cancellazione dell'account, che Google Play pretende |
+| `iscriviti/` | lista d'attesa: raccoglie l'email e basta — **non crea account**, che nascono nell'app |
 
 ## Perché il reset è una pagina web
 

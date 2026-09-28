@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aceto · Iscriviti</title>
+<link rel="icon" href="../aceto-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../stile.css">
+</head>
+<body>
+<main>
+  <div class="scheda">
+    <div class="marchio">
+  <img src="../aceto-logo.svg" alt="" width="40" height="40">
+  <span><b>Aceto</b><small>Mangia bene, senza pensarci</small></span>
+</div>
+    <h1>Ti avvisiamo quando esce</h1>
+    <p>Aceto trasforma un piano alimentare settimanale in menu del giorno, lista della spesa e dispensa.
+    Lascia la tua email: ti scriviamo una volta sola, quando l'app è scaricabile.</p>
+
+    <form id="modulo">
+      <label for="email">La tua email</label>
+      <input id="email" type="email" autocomplete="email" required placeholder="nome@email.com">
+      <button id="invia" type="submit">Avvisami</button>
+    </form>
+
+    <div class="esito" id="esito"></div>
+
+    <div id="store" hidden>
+      <p style="margin-top:22px">Quando sarà pubblicata la troverai qui:</p>
+      <ul>
+        <li>App Store — in arrivo</li>
+        <li>Google Play — in arrivo</li>
+      </ul>
+    </div>
+
+    <p style="margin-top:22px;font-size:13px;color:var(--muted)">
+      L'indirizzo serve solo per questo avviso: non crea nessun account e non finisce in nessuna lista
+      pubblicitaria. L'account, se vorrai, lo creerai dall'app.
+    </p>
+  </div>
+  <footer>In attesa del sito ufficiale · <a href="../">Aceto</a></footer>
+</main>
+
+<script>
+  const PROGETTO = 'https://vjgdqzfgwgefxuefufvt.supabase.co';
+  const CHIAVE = 'sb_publishable_wBstGN2v9PAGbPTj7PKHYA_U6HethhX';   // chiave pubblicabile: fatta per stare in pagine pubbliche
+
+  const modulo = document.getElementById('modulo');
+  const bottone = document.getElementById('invia');
+  const esito = document.getElementById('esito');
+
+  function mostra(testo, ok) {
+    esito.textContent = testo;
+    esito.className = 'esito mostra ' + (ok ? 'ok' : 'errore');
+  }
+
+  modulo.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    bottone.disabled = true;
+    bottone.textContent = 'Un attimo…';
+    try {
+      const r = await fetch(PROGETTO + '/rest/v1/lista_attesa', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: CHIAVE,
+          Authorization: 'Bearer ' + CHIAVE,
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({ email, provenienza: location.search.slice(1) || 'aceto-web' }),
+      });
+      // 409 = indirizzo già in lista: per chi scrive è la stessa cosa, è iscritto
+      if (!r.ok && r.status !== 409) throw new Error('Non ci siamo riusciti: riprova fra poco.');
+      modulo.hidden = true;
+      document.getElementById('store').hidden = false;
+      mostra(r.status === 409 ? 'Sei già in lista: ti scriviamo noi.' : 'Fatto: ti avvisiamo appena esce.', true);
+    } catch (err) {
+      mostra(err.message, false);
+      bottone.disabled = false;
+      bottone.textContent = 'Avvisami';
+    }
+  });
+</script>
+</body>
+</html>
